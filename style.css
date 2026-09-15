@@ -22,3 +22,101 @@
 /* Crisp, consistently sized habit symbols. */
 .habit-icon{display:grid;place-items:center;width:34px;flex:0 0 34px;filter:none}
 .habit-icon .icon{width:28px;height:28px;stroke-width:1.8}
+/* Habit gestures and editor */
+.habit-row{position:relative;border-radius:17px;isolation:isolate;background:#13232d;overflow:hidden;flex-shrink:0}
+.habit-row .habit{position:relative;z-index:1;padding:0;gap:0;touch-action:pan-y;user-select:none;-webkit-user-select:none;transition:transform .18s ease;background:linear-gradient(105deg,color-mix(in srgb,var(--accent) 22%,#112028),#1b2433 83%)}
+.habit.dragging{transition:none}
+.habit-toggle{display:flex;align-items:center;gap:10px;min-width:0;flex:1;height:100%;padding:10px 0 10px 12px;background:transparent;text-align:left}
+.habit-toggle .habit-copy strong{font-size:13px}.habit-toggle .habit-icon{width:29px;flex-basis:29px}.habit-toggle .duration{padding:0;font-size:10px;background:none}.habit-toggle .check-circle{width:23px;height:23px}
+.habit-more{display:grid;place-items:center;align-self:stretch;flex:0 0 40px;background:none;color:#96a9bf}.habit-more svg{width:19px;height:19px;fill:currentColor}
+.swipe-cue{position:absolute;inset:0;display:flex;align-items:center;gap:7px;padding:0 14px;font-size:11px;font-weight:600;opacity:0;transition:opacity .15s;color:white}.swipe-cue .icon{width:19px;height:19px}.cue-done{background:#19794f}.cue-undone{background:#536276;justify-content:flex-end}.swipe-right .cue-done,.swipe-left .cue-undone{opacity:.65}.swipe-ready .swipe-cue{opacity:1}
+.habit-editor{padding:25px 22px;max-height:calc(100dvh - 28px);overscroll-behavior:contain}.editor-heading{display:flex;align-items:center;gap:14px;padding-right:20px}.editor-heading h2{font-size:23px;margin:4px 0 0}.editor-heading .eyebrow{font-size:9px;letter-spacing:1.6px}.editor-symbol{display:grid;place-items:center;flex:0 0 48px;height:48px;border-radius:14px;color:var(--accent);background:color-mix(in srgb,var(--accent) 15%,#152231)}.editor-symbol .icon{width:28px;height:28px}
+.habit-editor form{gap:17px;margin-top:22px}.habit-editor fieldset{padding:0;margin:0;border:0;min-width:0}.habit-editor legend{padding:0;margin-bottom:10px;font-size:13px;color:#b9c7d9}.icon-picker{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}.icon-picker label,.color-picker label{position:relative;cursor:pointer;display:block}.icon-picker input,.color-picker input{position:absolute;width:1px;height:1px;opacity:0;padding:0}.icon-picker span{height:43px;border-radius:11px;display:grid;place-items:center;border:1px solid #ffffff12;background:#0d192780;color:#9baec7}.icon-picker .icon{width:23px;height:23px}.icon-picker input:checked+span{color:#91caff;border-color:#67aeff;background:#234567}.icon-picker input:focus-visible+span,.color-picker input:focus-visible+span{outline:2px solid white;outline-offset:3px}.color-picker{display:flex;justify-content:space-between;gap:8px}.color-picker label{flex:1}.color-picker span{display:grid;place-items:center;height:43px;border-radius:12px;background:var(--accent);border:2px solid transparent;color:#112332}.color-picker svg{width:21px;opacity:0}.color-picker input:checked+span{border-color:#fff}.color-picker input:checked+span svg{opacity:1}.form-pair{display:grid;grid-template-columns:1fr 1fr;gap:12px}.editor-note{font-size:11px;line-height:1.5}.editor-actions{display:flex;gap:10px}.editor-actions .primary{flex:1}.secondary{border-radius:24px;background:#ffffff09;padding:12px 22px;min-height:48px;color:#c3cfde}
+@media(max-width:500px){dialog.habit-editor{margin:auto auto 12px;border-radius:26px;padding-bottom:calc(22px + env(safe-area-inset-bottom))}}
+.habit-editor input[type=time]{appearance:none;-webkit-appearance:none;max-width:100%;min-height:48px;box-sizing:border-box}
+.habit-editor input::-webkit-date-and-time-value{text-align:left;min-height:20px}
+.habit-editor{max-height:calc(100svh - 24px);overflow-y:auto;-webkit-overflow-scrolling:touch}
+.habit-editor form{gap:12px;margin-top:17px}.habit-editor form label{gap:6px}.habit-editor form input,.habit-editor form select{padding:10px}.habit-editor .icon-picker span{height:39px}.habit-editor .color-picker span{height:39px}.habit-editor .editor-actions{position:sticky;bottom:0;background:#152231;padding-top:8px;z-index:2}
+/* Use the phone's full viewport; reserve the home-indicator inset only once. */
+:root{--nav-bottom:max(8px,env(safe-area-inset-bottom,0px));--nav-height:calc(61px + var(--nav-bottom))}
+.app-shell nav{padding-bottom:var(--nav-bottom)}
+.app-shell .floating-add{bottom:calc(48px + var(--nav-bottom))}
+.screen{padding-bottom:calc(var(--nav-height) + 24px)}
+.today{padding-bottom:calc(121px + var(--nav-bottom))}
+@media(max-width:599px),(pointer:coarse),(display-mode:standalone){
+ html,body{height:100%;overflow:hidden;background:var(--bg)}
+ body{display:block;min-height:0}
+ #app{height:100dvh}
+ .app-shell{height:100%;width:100%;max-width:none;max-height:none;border:0;border-radius:0;margin:0}
+ .app-shell nav{max-width:none}
+}
+/* Stay within the actual standalone viewport, including on iOS. */
+@media(display-mode:standalone){#app{position:fixed;inset:0;height:auto}}
+
+.app-shell nav{height:calc(64px + var(--nav-bottom));display:grid;grid-template-columns:repeat(5,minmax(0,1fr));align-items:start;padding:9px 8px var(--nav-bottom);border-radius:24px 24px 0 0}
+.app-shell nav button{width:100%;height:54px;min-height:54px;justify-content:center;gap:5px;padding:0;font-size:10px;line-height:13px}
+.app-shell nav .icon{width:24px;height:24px}
+.app-shell nav button.active:not(:first-child) .icon{width:24px;height:24px;padding:0;margin:0;background:none;box-shadow:none;color:#63beff}
+:root{--nav-height:calc(64px + var(--nav-bottom))}
+.app-shell .floating-add{bottom:calc(var(--nav-height) + 8px);width:54px;height:54px}
+.today{padding-bottom:calc(var(--nav-height) + 73px)}
+/* Cards scroll behind the floating add button, down to the navigation. */
+.screen{height:calc(100% - var(--nav-height));padding-bottom:16px}
+.screen.today{height:calc(100% - var(--nav-height));padding-bottom:73px}
+/* Anchor the dock to the visible bottom edge, not the clipped content box. */
+@media(display-mode:standalone){
+ #app{position:fixed;inset:0;height:auto}
+ .app-shell nav{position:fixed;bottom:0}
+ .app-shell .floating-add{position:fixed;bottom:calc(var(--nav-height) + 8px)}
+}
+
+/* Shared sheets use the same surfaces, accents and rounded controls as the app. */
+dialog.app-sheet{
+ --sheet-accent:#64b7ff;
+ width:100%;max-width:430px;max-height:calc(100dvh - 24px - env(safe-area-inset-top));
+ margin:auto auto 0;padding:0;border:1px solid #7895b525;border-bottom:0;
+ border-radius:28px 28px 0 0;color:var(--text);
+ background:linear-gradient(145deg,#1b2a3b,#111e2c 60%);
+ box-shadow:0 -12px 60px #02081070,inset 0 1px 0 #ffffff08;
+ overflow:hidden;
+}
+dialog.app-sheet[open]{display:flex;flex-direction:column;animation:sheet-enter .24s cubic-bezier(.2,.8,.2,1)}
+dialog.app-sheet::backdrop{background:#03091285;backdrop-filter:blur(5px)}
+.sheet-top{height:43px;flex:0 0 43px;position:relative}
+.sheet-grip{position:absolute;width:34px;height:4px;left:calc(50% - 17px);top:11px;border-radius:5px;background:#8b9cb340}
+.app-sheet .modal-close{right:13px;top:9px;width:32px;height:32px;background:#a6bbd510;color:#b8c7da}
+.app-sheet .modal-close .icon{width:17px;height:17px}
+.sheet-body{overflow-y:auto;overscroll-behavior:contain;min-height:0;padding:0 22px max(22px,env(safe-area-inset-bottom));scrollbar-width:none}
+.app-sheet h2{font-size:25px;font-weight:650;line-height:1.2;letter-spacing:-.65px;margin:2px 24px 12px 0}
+.app-sheet h3{font-size:15px;font-weight:600;margin-top:20px}
+.app-sheet p{font-size:13px;color:#a6b6ca;line-height:1.55}
+.app-sheet form,.app-sheet.habit-editor form{gap:17px;margin-top:23px}
+.app-sheet form label{font-size:12px;font-weight:500;color:#9cacc2;gap:8px}
+.app-sheet form input,.app-sheet form select{background:#0b172480;border:1px solid #8daac017;border-radius:13px;min-height:46px;padding:12px;color:#eaf0f9;font-size:16px;box-shadow:inset 0 1px 3px #0000000d;transition:border-color .15s,background .15s}
+.app-sheet form input:focus,.app-sheet form select:focus{outline:0;border-color:#68b7fc80;background:#12253a}
+.app-sheet input::placeholder{color:#637b94}
+.app-sheet .primary{border-radius:15px;min-height:48px;background:linear-gradient(110deg,#437fe9,#219fec);box-shadow:inset 0 1px 0 #ffffff22,0 4px 14px #027cdd15;font-size:14px;font-weight:600}
+.app-sheet .secondary{min-height:48px;border-radius:15px;background:#b3c8df09;border:1px solid #8daac017;font-size:14px;color:#aebed1}
+.app-sheet .fine-print,.app-sheet .editor-note{font-size:11px;line-height:1.55;color:#7f93ab}
+.app-sheet .editor-heading{padding-right:0;gap:13px;margin-bottom:2px}
+.app-sheet .editor-heading .eyebrow{font-size:9px;letter-spacing:1.5px;color:#859bb6;margin-bottom:5px}
+.app-sheet .editor-heading h2{font-size:25px;margin:0;letter-spacing:-.65px}
+.app-sheet .editor-symbol{width:51px;flex-basis:51px;height:51px;border-radius:16px;background:linear-gradient(145deg,color-mix(in srgb,var(--accent) 20%,#172434),#1a293a);border:1px solid color-mix(in srgb,var(--accent) 25%,transparent)}
+.app-sheet fieldset{background:#0b172438;border:1px solid #809cb410;border-radius:16px;padding:13px;margin:0}
+.app-sheet fieldset legend{float:left;width:100%;padding:0;margin-bottom:12px;color:#9cacc2;font-size:12px}
+.app-sheet .icon-picker{clear:both;grid-template-columns:repeat(5,1fr);gap:7px}
+.app-sheet .icon-picker input,.app-sheet .color-picker input{inset:0;width:100%;height:100%;min-height:0;padding:0;margin:0;border:0;z-index:1;cursor:pointer}
+.app-sheet .icon-picker span{height:42px;background:#152637;border-color:transparent;border-radius:11px;color:#8ca2bc}
+.app-sheet .icon-picker input:checked+span{color:var(--sheet-accent);border-color:color-mix(in srgb,var(--sheet-accent) 55%,transparent);background:color-mix(in srgb,var(--sheet-accent) 13%,#122131)}
+.app-sheet .color-picker{clear:both;gap:8px}
+.app-sheet .color-picker label{height:39px;display:grid;place-items:center}
+.app-sheet .color-picker span{width:29px;height:29px;border-radius:50%;border:0;box-shadow:0 0 0 4px transparent}
+.app-sheet .color-picker input:checked+span{border:0;box-shadow:0 0 0 3px #132232,0 0 0 4px var(--accent)}
+.app-sheet .color-picker svg{width:16px;height:16px;stroke-width:2.3}
+.app-sheet .editor-actions{position:sticky;bottom:calc(-1 * max(22px,env(safe-area-inset-bottom)));padding:12px 0 max(22px,env(safe-area-inset-bottom));margin-bottom:calc(-1 * max(22px,env(safe-area-inset-bottom)));background:linear-gradient(#13202def,#13202d 30%);gap:10px;z-index:2}
+.app-sheet .article-hero{display:block;width:100%;height:175px;margin:0 0 20px;border-radius:16px;object-fit:cover}
+.app-sheet .article-body{font-size:14px;line-height:1.8;margin:18px 0}
+.app-sheet .detail-number{font-size:68px;color:#6cbdff;padding:20px 0 0;letter-spacing:-3px;margin-top:0}
+@keyframes sheet-enter{from{transform:translateY(35px);opacity:0}to{transform:translateY(0);opacity:1}}
+@media(min-width:600px) and (pointer:fine){dialog.app-sheet{margin:auto;border:1px solid #7895b525;border-radius:28px;max-width:393px;max-height:calc(100dvh - 48px)}}
+@media(prefers-reduced-motion:reduce){dialog.app-sheet[open]{animation:none}}
