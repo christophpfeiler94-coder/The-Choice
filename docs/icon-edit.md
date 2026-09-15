@@ -1,5 +1,13 @@
 # Home Screen icon correction
 
+## Glass frame restored (current)
+
+Built-in image editing produced `docs/icon-glass.png`, exported to the four `public/assets/choice-*-v4-*.png` installation sizes.
+
+Prompt: Correct the framing of this exact app icon. KEEP its rounded glass frame, glowing beveled rim and glass reflections, and KEEP the original sunrise, mountains, lake and branching road artwork unchanged. Remove only the large surrounding dark backdrop/margins. Tightly fit the rounded-square glass icon to the entire square canvas: its top, bottom, left and right outer edges must touch the canvas bounds, with ZERO surrounding padding. Restore the original glass frame faithfully. The image should be the app icon itself, not a product mockup sitting on a background. No text. Square output.
+
+## Previous full-bleed version
+
 Created with the built-in image editing tool from the supplied Photo 1.jpg.
 
 Master: `docs/icon-full-bleed.png`. Installation exports: `public/assets/choice-apple-v3-180.png`, `choice-icon-v3-192.png`, `choice-icon-v3-512.png`, and `choice-favicon-v3-32.png`.
